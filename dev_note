@@ -1,0 +1,19 @@
+[25-05-2018]
+- Square and Regtangle grids are saved separately
+- in the saved file there is no data label for each parameter, so those two file has difference sequences. In GRIDFILE_NM, there is uint8_t configured_grid_y_size saved after the x_size, where in GRIDFILE, there is no y_size.
+- float x_start, y_start are saved too from this commit.
+- 
+
+Limitation
+- cannot save/load grid if grid_sizes differ from the config. fix1 overide grid_size in config, fix2 save grid_size in the file.
+
+To do
+- can save grid even size is different by save/load grid size and have higher priority than default.
+- square and reg saved in same file by save with same sequence
+- save/load parameters sequence should be same for all, so that can save all kind of stategies. No need to check.
+
+variables
+float x_size, y_size 	loaded from config and modified by G32 A... B...
+float x_start, y_start		init with 0.0 and modified by G32 X... Y...
+uint8_t configured_grid_x_size, configured_grid_y_size	loaded from config
+uint8_t current_grid_x_size, current_grid_y_size		same as above and modifed by gcode

@@ -113,6 +113,8 @@
 
 #define GRIDFILE "/sd/cartesian.grid"
 #define GRIDFILE_NM "/sd/cartesian_nm.grid"
+#define GRIDFILE_2C "/sd/cartesian_two_corners.grid"
+#define GRIDFILE_NM_2C "/sd/cartesian_nm_two_corners.grid"
 
 CartGridStrategy::CartGridStrategy(ZProbe *zprobe) : LevelingStrategy(zprobe)
 {
@@ -182,11 +184,6 @@ bool CartGridStrategy::handleConfig()
 
 void CartGridStrategy::save_grid(StreamOutput *stream)
 {
-    if(only_by_two_corners){
-        stream->printf("error:Unable to save grid in only_by_two_corners mode\n");
-        return;
-    }
-
     if(isnan(grid[0])) {
         stream->printf("error:No grid to save\n");
         return;
@@ -197,9 +194,15 @@ void CartGridStrategy::save_grid(StreamOutput *stream)
         return;
     }
 
-    FILE *fp = (configured_grid_x_size == configured_grid_y_size)?fopen(GRIDFILE, "w"):fopen(GRIDFILE_NM, "w");
+    FILE *fp;
+    if(only_by_two_corners){
+        fp = (configured_grid_x_size == configured_grid_y_size)?fopen(GRIDFILE_2C, "w"):fopen(GRIDFILE_NM_2C, "w");
+    }
+    else{
+        fp = (configured_grid_x_size == configured_grid_y_size)?fopen(GRIDFILE, "w"):fopen(GRIDFILE_NM, "w");
+    }
     if(fp == NULL) {
-        stream->printf("error:Failed to open grid file %s\n", GRIDFILE);
+        stream->printf("error:Failed to open grid file\n");
         return;
     }
     uint8_t tmp_configured_grid_size = configured_grid_x_size;
@@ -216,6 +219,18 @@ void CartGridStrategy::save_grid(StreamOutput *stream)
             fclose(fp);
             return;
         }
+    }
+
+    if(fwrite(&x_start, sizeof(float), 1, fp) != 1)  {
+        stream->printf("error:Failed to write x_start\n");
+        fclose(fp);
+        return;
+    }
+
+    if(fwrite(&y_start, sizeof(float), 1, fp) != 1)  {
+        stream->printf("error:Failed to write y_start\n");
+        fclose(fp);
+        return;
     }
 
     if(fwrite(&x_size, sizeof(float), 1, fp) != 1)  {
@@ -238,21 +253,23 @@ void CartGridStrategy::save_grid(StreamOutput *stream)
                 return;
             }
         }
-    }
-    stream->printf("grid saved to %s\n", GRIDFILE);
+    } 
+    only_by_two_corners?stream->printf("two corners grid saved\n"):printf("grid saved\n");
     fclose(fp);
 }
 
 bool CartGridStrategy::load_grid(StreamOutput *stream)
 {
+    FILE *fp;
     if(only_by_two_corners){
-        stream->printf("error:Unable to load grid in only_by_two_corners mode\n");
-        return false;
+        fp = (configured_grid_x_size == configured_grid_y_size)?fopen(GRIDFILE_2C, "r"):fopen(GRIDFILE_NM_2C, "r");
+    }
+    else{
+        fp = (configured_grid_x_size == configured_grid_y_size)?fopen(GRIDFILE, "r"):fopen(GRIDFILE_NM, "r");
     }
 
-    FILE *fp = (configured_grid_x_size == configured_grid_y_size)?fopen(GRIDFILE, "r"):fopen(GRIDFILE_NM, "r");
     if(fp == NULL) {
-        stream->printf("error:Failed to open grid %s\n", GRIDFILE);
+        stream->printf("error:Failed to open grid\n");
         return false;
     }
 
@@ -288,6 +305,27 @@ bool CartGridStrategy::load_grid(StreamOutput *stream)
     }
 
     if(fread(&x, sizeof(float), 1, fp) != 1) {
+        stream->printf("error:Failed to read grid x_start\n");
+        fclose(fp);
+        return false;
+    }
+
+    if(fread(&y, sizeof(float), 1, fp) != 1) {
+        stream->printf("error:Failed to read grid y_start\n");
+        fclose(fp);
+        return false;
+    }
+
+    if(only_by_two_corners){
+        this->x_start = x;
+        this->y_start = y;
+    }
+    else if(x!=x_start || y!=y_start){
+        stream->printf("error:start changed read (%f, %f) - config (%f, %f)\n", x, y, x_start, y_start);
+        return false;
+    }
+
+    if(fread(&x, sizeof(float), 1, fp) != 1) {
         stream->printf("error:Failed to read grid x size\n");
         fclose(fp);
         return false;
@@ -299,7 +337,11 @@ bool CartGridStrategy::load_grid(StreamOutput *stream)
         return false;
     }
 
-    if(x != x_size || y != y_size) {
+    if(only_by_two_corners){
+        this->x_size = x;
+        this->y_size = y;
+    }
+    else if(x != x_size || y != y_size) {
         stream->printf("error:bed dimensions changed read (%f, %f) - config (%f,%f)\n", x, y, x_size, y_size);
         fclose(fp);
         return false;
@@ -314,7 +356,7 @@ bool CartGridStrategy::load_grid(StreamOutput *stream)
             }
         }
     }
-    stream->printf("grid loaded, grid: (%f, %f), size: %d x %d\n", x_size, y_size, load_grid_x_size, load_grid_y_size);
+    stream->printf("grid loaded, X%f, Y%f, A%f, B%f, size: %d x %d\n", x_start, y_start, x_size, y_size, load_grid_x_size, load_grid_y_size);
     fclose(fp);
     return true;
 }
@@ -627,6 +669,7 @@ void CartGridStrategy::doCompensation(float *target, bool inverse)
 void CartGridStrategy::print_bed_level(StreamOutput *stream)
 {
     if(!human_readable){
+        stream->printf("X%f, Y%f, A%f, B%f\n", x_start, y_start, x_size, y_size);
         for (int y = 0; y < current_grid_y_size; y++) {
             for (int x = 0; x < current_grid_x_size; x++) {
                 stream->printf("%1.4f ", grid[x + (current_grid_x_size * y)]);

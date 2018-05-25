@@ -1,0 +1,76 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "browse": {
+                "path": [
+                    "${workspaceFolder}"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "includePath": [
+                "${workspaceFolder}",
+                "${workspaceFolder}",
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/src/libs",
+                "${workspaceFolder}/src/libs/ADC",
+                "${workspaceFolder}/src/libs/ChaNFS",
+                "${workspaceFolder}/src/libs/ChaNFS/CHAN_FS",
+                "${workspaceFolder}/src/libs/ConfigSources",
+                "${workspaceFolder}/src/libs/Network",
+                "${workspaceFolder}/src/libs/Network/Drivers",
+                "${workspaceFolder}/src/libs/Network/uip",
+                "${workspaceFolder}/src/libs/Network/uip/uip",
+                "${workspaceFolder}/src/libs/LPC17xx",
+                "${workspaceFolder}/src/libs/LPC17xx/LPC17xxLib/inc",
+                "${workspaceFolder}/src/libs/USBDevice",
+                "${workspaceFolder}/src/libs/USBDevice/USBDevice",
+                "${workspaceFolder}/src/libs/USBDevice/USBMSD",
+                "${workspaceFolder}/src/modules",
+                "${workspaceFolder}/src/modules/tools/rotarydeltacalibration",
+                "${workspaceFolder}/src/modules/tools/filamentdetector",
+                "${workspaceFolder}/src/modules/tools/toolmanager",
+                "${workspaceFolder}/src/modules/tools/extruder",
+                "${workspaceFolder}/src/modules/tools/endstops",
+                "${workspaceFolder}/src/modules/tools/drillingcycles",
+                "${workspaceFolder}/src/modules/tools/laser",
+                "${workspaceFolder}/src/modules/tools/scaracal",
+                "${workspaceFolder}/src/modules/tools/spindle",
+                "${workspaceFolder}/src/modules/tools/switch",
+                "${workspaceFolder}/src/modules/tools/temperaturecontrol",
+                "${workspaceFolder}/src/modules/tools/temperatureswitch",
+                "${workspaceFolder}/src/modules/tools/zprobe",
+                "${workspaceFolder}/src/modules/utils/motordrivercontrol",
+                "${workspaceFolder}/src/modules/utils/killbutton",
+                "${workspaceFolder}/src/modules/utils/currentcontrol",
+                "${workspaceFolder}/src/modules/utils/configurator",
+                "${workspaceFolder}/src/modules/utils/panel",
+                "${workspaceFolder}/src/modules/utils/player",
+                "${workspaceFolder}/src/modules/utils/PlayLed",
+                "${workspaceFolder}/src/modules/utils/simpleshell",
+                "${workspaceFolder}/src/modules/robot",
+                "${workspaceFolder}/src/modules/robot/arm_solutions",
+                "${workspaceFolder}/src/modules/communication",
+                "${workspaceFolder}/src/modules/communication/utils",
+                "${workspaceFolder}/src/testframework",
+                "${workspaceFolder}/gcc-arm-none-eabi/arm-none-eabi/include",
+                "${workspaceFolder}/gcc-arm-none-eabi/arm-none-eabi/include/c++/4.8.3",
+                "${workspaceFolder}/gcc-arm-none-eabi/arm-none-eabi/include/c++/4.8.3/arm-none-eabi",
+                "${workspaceFolder}/gcc-arm-none-eabi/lib/gcc/arm-none-eabi/4.8.3/include",
+                "${workspaceFolder}/mbed/src/vendor/NXP/capi/LPC1768",
+                "${workspaceFolder}/mbed/src/vendor/NXP/cmsis/LPC1768",
+                "${workspaceFolder}/mbed/src/cpp",
+                "${workspaceFolder}/mbed/src/capi",
+                "${workspaceFolder}/mri"
+            ],
+            "defines": [
+                "CNC"
+            ],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 4
+}
