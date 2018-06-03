@@ -623,7 +623,7 @@ void Panel::set_control_value(float value)
 
 float Panel::get_control_value()
 {
-    return this->control_base_value + (this->control_normal_counter * this->normal_increment);
+    return this->control_base_value - (this->control_normal_counter * this->normal_increment);
 }
 
 bool Panel::is_playing() const
