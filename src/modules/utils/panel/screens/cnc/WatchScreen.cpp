@@ -176,7 +176,7 @@ void WatchScreen::display_menu_line(uint16_t line)
 {
     // in menu mode
     switch ( line ) {
-        case 0: THEPANEL->lcd->printf("     WCS      MCS %s", THEROBOT->inch_mode ? "in" : "mm"); break;
+        case 0: THEPANEL->lcd->printf("%s%s   WCS    MCS %s", THEPANEL->is_sbk()?"SBK":"   ", THEPANEL->is_paused()&THEPANEL->is_playing()?"@":" ", THEROBOT->inch_mode ? "in" : "mm"); break;
         case 1: THEPANEL->lcd->printf("X %8.3f %8.3f", wpos[0], mpos[0]); break;
         case 2: THEPANEL->lcd->printf("Y %8.3f %8.3f", wpos[1], mpos[1]); break;
         case 3: THEPANEL->lcd->printf("Z %8.3f %8.3f", wpos[2], mpos[2]); break;

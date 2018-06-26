@@ -77,7 +77,8 @@ class Panel : public Module {
 
         std::string getMessage() { return message; }
         bool hasMessage() { return message.size() > 0; }
-
+        bool is_sbk() { return sbk; }
+        bool is_paused() {return paused;}
         uint16_t get_screen_lines() const { return screen_lines; }
 
         float get_jogging_speed(int i) { return jogging_speed_mm_min[i]; }
@@ -156,7 +157,8 @@ class Panel : public Module {
             volatile bool refresh_flag:1;
             volatile bool do_buttons:1;
             volatile bool do_encoder:1;
-
+            bool sbk:1;
+            bool paused:1;
             char mode:2;
             char menu_offset:3;
             int encoder_click_resolution:3;

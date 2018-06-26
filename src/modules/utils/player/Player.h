@@ -32,6 +32,7 @@ class Player : public Module {
         void on_halt(void *argument);
 
     private:
+        void singleblock_command( string parameters, StreamOutput *stream );
         void play_command( string parameters, StreamOutput* stream );
         void progress_command( string parameters, StreamOutput* stream );
         void abort_command( string parameters, StreamOutput* stream );
@@ -54,6 +55,8 @@ class Player : public Module {
         float saved_position[3]; // only saves XYZ
         std::map<uint16_t, float> saved_temperatures;
         struct {
+            bool paused:1;
+            bool singleblock:1;
             bool on_boot_gcode_enable:1;
             bool booted:1;
             bool playing_file:1;

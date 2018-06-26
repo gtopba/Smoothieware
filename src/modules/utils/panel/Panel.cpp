@@ -68,6 +68,9 @@
 #define laser_checksum             CHECKSUM("laser")
 #define display_extruder_checksum  CHECKSUM("display_extruder")
 
+#define singleblock_checksum       CHECKSUM("singleblock")
+#define paused_checksum            CHECKSUM("paused")
+
 Panel* Panel::instance= nullptr;
 
 #define MENU_MODE                  0
@@ -93,6 +96,8 @@ Panel::Panel()
     this->external_sd_enable= false;
     this->in_idle= false;
     this->display_extruder= false;
+    this->sbk = false;
+    this->paused = false;
     strcpy(this->playing_file, "Playing file");
 }
 
@@ -298,13 +303,23 @@ void Panel::on_set_public_data(void *argument)
 
     if(!pdr->starts_with(panel_checksum)) return;
 
-    if(!pdr->second_element_is(panel_display_message_checksum)) return;
-
-    string *s = static_cast<string *>(pdr->get_data_ptr());
-    if (s->size() > 20) {
-        this->message = s->substr(0, 20);
+    if(pdr->second_element_is(panel_display_message_checksum)) {
+        string *s = static_cast<string *>(pdr->get_data_ptr());
+        if (s->size() > 20) {
+            this->message = s->substr(0, 20);
+        } else {
+            this->message= *s;
+        }
+    } else if(pdr->second_element_is(singleblock_checksum)) {
+        bool t = *static_cast<bool *>(pdr->get_data_ptr());
+        this->sbk = t;
+        pdr->set_taken();
+    } else if(pdr->second_element_is(paused_checksum)) {
+        bool t = *static_cast<bool *>(pdr->get_data_ptr());
+        this->paused = t;
+        pdr->set_taken();
     } else {
-        this->message= *s;
+        return;
     }
 }
 

@@ -42,6 +42,9 @@
 #define before_resume_gcode_checksum      CHECKSUM("before_resume_gcode")
 #define leave_heaters_on_suspend_checksum CHECKSUM("leave_heaters_on_suspend")
 
+#define singleblock_checksum       CHECKSUM("singleblock")
+#define paused_checksum            CHECKSUM("paused")
+#define panel_checksum             CHECKSUM("panel")
 extern SDFAT mounter;
 
 Player::Player()
@@ -53,6 +56,8 @@ Player::Player()
     this->reply_stream = nullptr;
     this->suspended= false;
     this->suspend_loops= 0;
+    this->singleblock = false;
+    this->paused = false;
 }
 
 void Player::on_module_loaded()
@@ -260,9 +265,25 @@ void Player::on_console_line_received( void *argument )
         this->suspend_command( possible_command, new_message.stream );
     }else if (cmd == "resume") {
         this->resume_command( possible_command, new_message.stream );
+    }else if (cmd == "singleblock"){
+        this->singleblock_command( possible_command, new_message.stream );
     }
 }
 
+void Player::singleblock_command( string parameters, StreamOutput *stream )
+{
+    string options = shift_parameter(parameters);
+    if( options.find_first_of("Qq") != string::npos ) {
+        this->singleblock = false;
+    } else {
+        this->singleblock = true;
+        this->paused = true;
+    }
+    bool b = this->singleblock;
+    PublicData::set_value( panel_checksum, singleblock_checksum, &b );
+    b = this->paused;
+    PublicData::set_value( panel_checksum, paused_checksum, &b );
+}
 // Play a gcode file by considering each line as if it was received on the serial console
 void Player::play_command( string parameters, StreamOutput *stream )
 {
@@ -400,7 +421,7 @@ void Player::on_main_loop(void *argument)
         }
     }
 
-    if( this->playing_file ) {
+    if( this->playing_file && !this->paused) {
         if(THEKERNEL->is_halted()) {
             return;
         }
@@ -429,6 +450,11 @@ void Player::on_main_loop(void *argument)
                 // waits for the queue to have enough room
                 THEKERNEL->call_event(ON_CONSOLE_LINE_RECEIVED, &message);
                 played_cnt += len;
+                if(this->singleblock){
+                    this->paused = true;
+                    bool b = this->paused;
+                    PublicData::set_value( panel_checksum, paused_checksum, &b );
+                }
                 return; // we feed one line per main loop
 
             } else {
@@ -596,6 +622,9 @@ void Player::resume_command(string parameters, StreamOutput *stream )
 {
     if(!suspended) {
         stream->printf("Not suspended\n");
+        this->paused = false;
+        bool b = this->paused;
+        PublicData::set_value( panel_checksum, paused_checksum, &b );
         return;
     }
 
