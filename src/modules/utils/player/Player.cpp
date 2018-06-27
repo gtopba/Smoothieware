@@ -277,7 +277,7 @@ void Player::singleblock_command( string parameters, StreamOutput *stream )
         this->singleblock = false;
     } else {
         this->singleblock = true;
-        this->paused = true;
+        this->paused = this->playing_file ? true : false ;
     }
     bool b = this->singleblock;
     PublicData::set_value( panel_checksum, singleblock_checksum, &b );
@@ -310,6 +310,9 @@ void Player::play_command( string parameters, StreamOutput *stream )
     stream->printf("Playing %s\r\n", this->filename.c_str());
 
     this->playing_file = true;
+    this->paused = this->singleblock ? true : false ;
+    bool b = this->paused;
+    PublicData::set_value( panel_checksum, paused_checksum, &b );
 
     // Output to the current stream if we were passed the -v ( verbose ) option
     if( options.find_first_of("Vv") == string::npos ) {
