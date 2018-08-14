@@ -628,6 +628,7 @@ void Player::resume_command(string parameters, StreamOutput *stream )
         this->paused = false;
         bool b = this->paused;
         PublicData::set_value( panel_checksum, paused_checksum, &b );
+        THEKERNEL->set_feed_hold(false);
         return;
     }
 

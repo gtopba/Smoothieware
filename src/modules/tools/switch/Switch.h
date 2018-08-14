@@ -27,7 +27,7 @@ class Switch : public Module {
         Switch(uint16_t name);
 
         void on_module_loaded();
-        void on_main_loop(void *argument);
+        void on_idle(void *argument);
         void on_config_reload(void* argument);
         void on_gcode_received(void* argument);
         void on_get_public_data(void* argument);

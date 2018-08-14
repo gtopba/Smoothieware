@@ -76,7 +76,7 @@ void Switch::on_module_loaded()
     this->switch_changed = false;
 
     this->register_for_event(ON_GCODE_RECEIVED);
-    this->register_for_event(ON_MAIN_LOOP);
+    this->register_for_event(ON_IDLE);
     this->register_for_event(ON_GET_PUBLIC_DATA);
     this->register_for_event(ON_SET_PUBLIC_DATA);
     this->register_for_event(ON_HALT);
@@ -351,7 +351,7 @@ void Switch::on_set_public_data(void *argument)
     }
 }
 
-void Switch::on_main_loop(void *argument)
+void Switch::on_idle(void *argument)
 {
     if(this->switch_changed) {
         if(this->switch_state) {
